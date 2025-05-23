@@ -1,0 +1,23 @@
+2025-05-23 14:32:12,469 INFO: LocalInsight startup [in /Users/anushverma/Desktop/lumar/flask_app/app/__init__.py:97]
+2025-05-23 14:32:18,586 INFO: LocalInsight startup [in /Users/anushverma/Desktop/lumar/flask_app/app/__init__.py:97]
+2025-05-23 14:32:24,833 INFO: Initializing RetrieverClient for 1234 with folder: /Users/anushverma/Desktop/lumar/_archive/documents [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:27]
+2025-05-23 14:32:25,212 INFO: RetrieverClient and Chat initialized and cached for 1234 [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:41]
+2025-05-23 14:32:29,583 INFO: Search by 1234: query='cats', image='None', option='all' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:32:35,115 INFO: Search by 1234: query='cats', image='None', option='all' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:32:40,067 INFO: Search by 1234: query='cats', image='None', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:32:50,578 INFO: Search by 1234: query='lizard', image='None', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:32:58,657 INFO: Search by 1234: query='doctor', image='None', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:33:11,626 INFO: Search by 1234: query='forest', image='None', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:33:27,341 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747991007_ChatGPT_Image_Apr_24_2025_08_55_18_PM.png', option='all' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:33:28,091 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747991008_ChatGPT_Image_Apr_24_2025_08_55_18_PM.png', option='all' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:33:34,554 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747991014_ChatGPT_Image_Apr_24_2025_08_55_18_PM.png', option='text' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:33:41,491 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747991021_ChatGPT_Image_Apr_24_2025_08_44_57_PM.png', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:34:00,846 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747991040_Screenshot_2025-05-23_at_2.33.50_PM.png', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:125]
+2025-05-23 14:34:11,752 INFO: Chat by 1234: text='w4
+', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]
+2025-05-23 14:34:12,658 INFO: Chat by 1234: text='w4
+', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]
+2025-05-23 14:34:12,849 INFO: Chat by 1234: text='w4
+', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]
+2025-05-23 14:34:13,018 INFO: Chat by 1234: text='w4
+', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]

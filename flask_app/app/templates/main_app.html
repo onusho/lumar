@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}App - Lumar{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link {% if active_tab == 'search' %}active{% endif %}" id="search-tab" data-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="true">Search</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link {% if active_tab == 'chat' %}active{% endif %}" id="chat-tab" data-toggle="tab" href="#chat" role="tab" aria-controls="chat" aria-selected="false">Chat</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade {% if active_tab == 'search' %}show active{% endif %}" id="search" role="tabpanel" aria-labelledby="search-tab">
+        <h3 class="mt-3">Semantic Search</h3>
+        <form method="POST" action="{{ url_for('handle_search_action') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="search_query">Search Query</label>
+                <input type="text" class="form-control" id="search_query" name="query" placeholder="Type your search query...">
+            </div>
+            <div class="form-group">
+                <label for="search_image">Upload Image (for visual search)</label>
+                <input type="file" class="form-control-file" id="search_image" name="image_file">
+            </div>
+            <div class="form-group">
+                <label>Search Type:</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="search_option" id="search_any" value="all" checked>
+                    <label class="form-check-label" for="search_any">Any</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="search_option" id="search_text" value="text">
+                    <label class="form-check-label" for="search_text">Text</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="search_option" id="search_media" value="image"> <!-- 'image' for 'media' as per your retriever -->
+                    <label class="form-check-label" for="search_media">Media</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="limit">Number of Results: <span id="limit_value">5</span></label>
+                <input type="range" class="form-control-range" id="limit" name="limit" min="1" max="20" value="5" oninput="document.getElementById('limit_value').textContent = this.value">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        {% if search_results %}
+            {% include '_search_results.html' %}
+        {% endif %}
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'chat' %}show active{% endif %}" id="chat" role="tabpanel" aria-labelledby="chat-tab">
+        <h3 class="mt-3">RAG Chat</h3>
+        <div class="chat-container mb-3 border p-3" style="height: 400px; overflow-y: scroll;">
+            {% include '_chat_messages.html' %}
+        </div>
+        <form method="POST" action="{{ url_for('handle_chat_action') }}" enctype="multipart/form-data" id="chat-form">
+            <div class="form-group">
+                <label for="chat_message">Your Message</label>
+                <textarea class="form-control" id="chat_message" name="user_message" rows="2" placeholder="Type your message..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="chat_audio">Upload Audio</label>
+                    <input type="file" class="form-control-file" id="chat_audio" name="audio_file" accept=".wav,.mp3">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="chat_image">Upload Image</label>
+                    <input type="file" class="form-control-file" id="chat_image" name="image_file" accept=".png,.jpg,.jpeg">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+            <a href="{{ url_for('clear_chat_history') }}" class="btn btn-warning">Clear Chat History</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// Script to keep active tab after page reload (e.g., form submission)
+$(document).ready(function(){
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab){
+        $('#myTab a[href="' + activeTab + '"]').tab('show');
+    }
+
+    // Scroll chat to bottom
+    var chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

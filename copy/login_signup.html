@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Login or Signup{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="auth-card card"> {# Added .card for Bootstrap styling if auth-card alone isn't enough #}
+                <div class="card-body p-4 p-md-5">
+                    <div class="row">
+                        <div class="col-md-6 border-end-md mb-4 mb-md-0"> {# Added mb-4 for spacing on mobile #}
+                            <h3 class="mb-4 text-primary"><span data-feather="log-in" class="me-2"></span>Login</h3>
+                            <form method="POST" action="{{ url_for('auth.login') }}"> {# CORRECTED #}
+                                <div class="mb-3">
+                                    <label for="login_username" class="form-label">Username</label>
+                                    <input type="text" class="form-control form-control-lg" id="login_username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="login_password" class="form-label">Password</label>
+                                    <input type="password" class="form-control form-control-lg" id="login_password" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6 mt-4 mt-md-0 ps-md-4">
+                            <h3 class="mb-4 text-success"><span data-feather="user-plus" class="me-2"></span>Signup</h3>
+                            <form method="POST" action="{{ url_for('auth.signup') }}"> {# CORRECTED #}
+                                <div class="mb-3">
+                                    <label for="signup_username" class="form-label">New Username</label>
+                                    <input type="text" class="form-control form-control-lg" id="signup_username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="signup_password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control form-control-lg" id="signup_password" name="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="signup_folder_path" class="form-label">Initial Folder Path</label>
+                                    <input type="text" class="form-control form-control-lg" id="signup_folder_path" name="folder_path" placeholder="/path/to/your/documents" required>
+                                    <div class="form-text small-text">The application needs read access to this folder.</div>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg w-100">Signup</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

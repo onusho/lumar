@@ -1,0 +1,9 @@
+{% if session.chat_messages %}
+    {% for message in session.chat_messages %}
+        <div class="chat-message p-2 mb-2 rounded {% if message.role == 'user' %}bg-primary text-white text-right{% else %}bg-light text-dark{% endif %}">
+            <strong>{{ message.role|capitalize }}:</strong> {{ message.content }}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No messages yet. Start a conversation!</p>
+{% endif %}

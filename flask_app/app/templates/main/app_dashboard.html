@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="app-dashboard">
+    {# Sidebar - this could be a separate include if it gets complex #}
+    <nav class="sidebar d-none d-md-block">
+        <div class="position-sticky">
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Navigation</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'search' %}active{% endif %}" href="#" data-bs-toggle="tab" data-bs-target="#search-tab-pane">
+                        <span data-feather="search"></span> Search Documents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'chat' %}active{% endif %}" href="#" data-bs-toggle="tab" data-bs-target="#chat-tab-pane">
+                        <span data-feather="message-circle"></span> RAG Chat
+                    </a>
+                </li>
+            </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Settings</span>
+            </h6>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.change_folder_page') }}">
+                        <span data-feather="folder-cog"></span> Change Folder
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+                        <span data-feather="log-out"></span> Logout
+                    </a>
+                </li>
+            </ul>
+             <div class="px-3 mt-auto pt-3"> <!-- Pushes to bottom of sidebar -->
+                <small class="d-block text-muted">Current Folder:</small>
+                <code class="small-text d-block" style="word-break: break-all;">{{ session.folder_path or 'Not set' }}</code>
+            </div>
+        </div>
+    </nav>
+
+    {# Main Content Area for Tabs #}
+    <main class="content-area">
+        {# Tab Navigation (visible on mobile, hidden on md+ where sidebar is used) #}
+        <ul class="nav nav-tabs d-md-none mb-3" id="appTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if active_tab == 'search' %}active{% endif %}" id="search-tab-mobile" data-bs-toggle="tab" data-bs-target="#search-tab-pane" type="button" role="tab" aria-controls="search-tab-pane" aria-selected="{% if active_tab == 'search' %}true{% else %}false{% endif %}"><span data-feather="search" class="me-1"></span>Search</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if active_tab == 'chat' %}active{% endif %}" id="chat-tab-mobile" data-bs-toggle="tab" data-bs-target="#chat-tab-pane" type="button" role="tab" aria-controls="chat-tab-pane" aria-selected="{% if active_tab == 'chat' %}true{% else %}false{% endif %}"><span data-feather="message-circle" class="me-1"></span>Chat</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="appTabContent">
+            <div class="tab-pane fade {% if active_tab == 'search' %}show active{% endif %}" id="search-tab-pane" role="tabpanel" aria-labelledby="search-tab-mobile" tabindex="0">
+                {% include "main/_search_interface.html" %}
+            </div>
+            <div class="tab-pane fade {% if active_tab == 'chat' %}show active{% endif %}" id="chat-tab-pane" role="tabpanel" aria-labelledby="chat-tab-mobile" tabindex="0">
+                {% include "main/_chat_interface.html" %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- START: MODIFIED SECTION FOR TAB SYNCHRONIZATION ---
+    const serverActiveTabName = "{{ active_tab }}"; // 'search' or 'chat' from Flask
+    let initialTabTargetId = '#search-tab-pane'; // Default
+    if (serverActiveTabName === 'chat') {
+        initialTabTargetId = '#chat-tab-pane';
+    }
+    // Set localStorage to what the server says it should be.
+    // This ensures that after a form submission, localStorage reflects the correct tab.
+    localStorage.setItem('activeAppTab', initialTabTargetId);
+    // --- END: MODIFIED SECTION FOR TAB SYNCHRONIZATION ---
+
+
+    // Link sidebar navigation to Bootstrap tabs for md+ screens
+    document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="tab"]').forEach(triggerEl => {
+        triggerEl.addEventListener('click', event => {
+            event.preventDefault();
+            const tabTarget = event.target.dataset.bsTarget; // e.g., #search-tab-pane
+            // Find the mobile tab button that controls this pane
+            const mobileTabButton = document.querySelector(`.nav-tabs .nav-link[data-bs-target="${tabTarget}"]`);
+            if (mobileTabButton) {
+                const tab = new bootstrap.Tab(mobileTabButton);
+                tab.show();
+            }
+            localStorage.setItem('activeAppTab', tabTarget); // Store active tab ID
+        });
+    });
+
+    // Link mobile tab navigation to Bootstrap tabs and localStorage
+    document.querySelectorAll('#appTabs .nav-link[data-bs-toggle="tab"]').forEach(triggerEl => {
+        triggerEl.addEventListener('shown.bs.tab', event => { // Use 'shown.bs.tab' to ensure it's fully shown
+            const tabTarget = event.target.dataset.bsTarget; // e.g., #search-tab-pane
+            localStorage.setItem('activeAppTab', tabTarget); // Store active tab ID
+
+            // Also update desktop sidebar active state
+            document.querySelectorAll('.sidebar .nav-link.active').forEach(activeLink => activeLink.classList.remove('active'));
+            const desktopLinkToActivate = document.querySelector(`.sidebar .nav-link[data-bs-target="${tabTarget}"]`);
+            if (desktopLinkToActivate) {
+                desktopLinkToActivate.classList.add('active');
+            }
+        });
+    });
+
+
+    // Ensure correct tab is shown on load based on localStorage (which is now primed by the server)
+    const activeAppTabId = localStorage.getItem('activeAppTab'); // This will be #search-tab-pane or #chat-tab-pane
+    
+    if (activeAppTabId) {
+        // Activate mobile tab button (which controls the tab pane visibility)
+        const mobileTabButtonToActivate = document.querySelector(`#appTabs .nav-link[data-bs-target="${activeAppTabId}"]`);
+        if (mobileTabButtonToActivate) {
+            const tab = new bootstrap.Tab(mobileTabButtonToActivate);
+            tab.show(); // This will also trigger 'shown.bs.tab' if not already active
+        }
+
+        // Manually activate desktop sidebar link if it's not already handled by 'shown.bs.tab'
+        // (e.g., if the tab was already active and 'shown.bs.tab' didn't fire on initial load for it)
+        const desktopTabTrigger = document.querySelector(`.sidebar .nav-link[data-bs-target="${activeAppTabId}"]`);
+        if (desktopTabTrigger && !desktopTabTrigger.classList.contains('active')) {
+             document.querySelectorAll('.sidebar .nav-link.active').forEach(activeLink => activeLink.classList.remove('active'));
+            desktopTabTrigger.classList.add('active');
+        }
+        // The tab content pane itself is already correctly set by the server-side Jinja templating
+        // (class="tab-pane fade show active") so we don't need to manipulate it here explicitly for initial load.
+    }
+    // No 'else' needed here because localStorage is now always primed by the server.
+});
+</script>
+{% endblock %}

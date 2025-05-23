@@ -1,0 +1,45 @@
+<div class="search-results mt-4">
+    <h4>Search Results:</h4>
+    {% if not search_results.text and not search_results.image %}
+        <p>No results found.</p>
+    {% endif %}
+
+    {% if search_results.text %}
+        <h5>Text Documents:</h5>
+        <ul>
+        {% for result in search_results.text %}
+            <li>
+                {{ result.path.split('/')[-1] }} (Score: {{ "%.2f"|format(result.score) }})
+                - <a href="{{ url_for('serve_media_file', filepath=result.path | urlencode) }}" target="_blank">View/Download</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if search_results.image %}
+        <h5>Media Files:</h5>
+        <div class="d-flex flex-wrap">
+        {% for result in search_results.image %}
+            <div class="m-2 p-2 border">
+                <p>
+                    {{ result.path.split('/')[-1].split('.')[0] }}{% if result.file_type == 'video_frame' %}_frame{% endif %} (Score: {{ "%.2f"|format(result.score) }})
+                </p>
+                {% if result.file_type == 'image' %}
+                    <img src="{{ url_for('serve_media_file', filepath=result.path | urlencode) }}" alt="{{ result.path.split('/')[-1] }}" style="max-width: 200px; max-height: 200px;">
+                {% elif result.file_type == 'video_frame' %}
+                     <img src="{{ url_for('serve_media_file', filepath=result.path | urlencode) }}" alt="Video frame from {{ result.path.split('/')[-1] }}" style="max-width: 200px; max-height: 200px;">
+                     <p><small>Frame from video: {{ result.path.split('/')[-1].split('_frame_')[0] + '.' + result.path.split('.')[-1] }}</small></p>
+                {% elif result.file_type == 'video' %}
+                     <video controls width="250">
+                        <source src="{{ url_for('serve_media_file', filepath=result.path | urlencode) }}" type="video/mp4"> <!-- Adjust type if needed -->
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+                <br>
+                <a href="{{ url_for('serve_media_file', filepath=result.path | urlencode) }}" target="_blank">Open Full Size/Download</a>
+
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+</div>

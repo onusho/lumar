@@ -1,0 +1,12 @@
+2025-05-23 15:48:50,566 INFO: Search by 1234: query='None', image='/Users/anushverma/Desktop/lumar/flask_app/app/static/uploads/search_1234_1747995530_Screenshot_2025-05-23_at_2.33.50_PM.png', option='image' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:123]
+2025-05-23 15:49:03,608 INFO: Cleared cached clients for user: 1234 [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:91]
+2025-05-23 16:37:30,089 INFO: Lumar startup [in /Users/anushverma/Desktop/lumar/flask_app/app/__init__.py:97]
+2025-05-23 16:37:35,965 INFO: Lumar startup [in /Users/anushverma/Desktop/lumar/flask_app/app/__init__.py:97]
+2025-05-23 16:38:05,167 INFO: Initializing RetrieverClient for 1234 with folder: /Users/anushverma/Desktop/lumar/_archive/documents [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:27]
+2025-05-23 16:38:05,704 INFO: RetrieverClient and Chat initialized and cached for 1234 [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:41]
+2025-05-23 16:38:33,371 INFO: Chat by 1234: text='hi', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]
+2025-05-23 16:41:58,226 INFO: Lumar startup [in /Users/anushverma/Desktop/lumar/flask_app/app/__init__.py:97]
+2025-05-23 16:58:53,769 INFO: Initializing RetrieverClient for 1234 with folder: /Users/anushverma/Desktop/lumar/_archive/documents [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:27]
+2025-05-23 16:58:54,407 INFO: RetrieverClient and Chat initialized and cached for 1234 [in /Users/anushverma/Desktop/lumar/flask_app/app/core/clients.py:41]
+2025-05-23 16:59:00,846 INFO: Chat by 1234: text='asdf
+', image='None', audio='None' [in /Users/anushverma/Desktop/lumar/flask_app/app/main/routes.py:190]

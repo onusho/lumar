@@ -1,0 +1,132 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><span data-feather="search" class="me-2"></span>Semantic Document Search</h1>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.handle_search_action') }}" enctype="multipart/form-data" class="mb-4 p-3 bg-light border rounded-3">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label for="search_query" class="form-label">Search Query</label>
+                <input type="text" class="form-control form-control-lg" id="search_query" name="query" placeholder="e.g., project update, financial report, image of a cat..." value="{{ request.form.get('query', '') }}">
+            </div>
+            <div class="col-md-6">
+                <label for="search_image_file" class="form-label">Upload Image (for visual similarity search)</label>
+                <input type="file" class="form-control" id="search_image_file" name="search_image_file" accept="image/png, image/jpeg, image/jpg">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Search Type</label>
+                <div class="mt-1">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_option" id="search_any" value="Any" {% if request.form.get('search_option', 'Any') == 'Any' %}checked{% endif %}>
+                        <label class="form-check-label" for="search_any">Any</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_option" id="search_text" value="Text" {% if request.form.get('search_option') == 'Text' %}checked{% endif %}>
+                        <label class="form-check-label" for="search_text">Text</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_option" id="search_media" value="Media" {% if request.form.get('search_option') == 'Media' %}checked{% endif %}>
+                        <label class="form-check-label" for="search_media">Media</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="limit" class="form-label">Results: <span id="limit_value_display">{{ request.form.get('limit', 5) }}</span></label>
+                <input type="range" class="form-range" id="limit" name="limit" min="1" max="20" value="{{ request.form.get('limit', 5) }}" oninput="document.getElementById('limit_value_display').textContent = this.value">
+            </div>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary btn-lg w-100"><span data-feather="zap" class="me-1"></span>Search Now</button>
+        </div>
+    </form>
+
+    {% if search_results_data is defined and search_results_data is not none %}
+    <div class="search-results-container">
+        <h3 class="mb-3">Search Results</h3>
+        {% if not search_results_data.get('text') and not search_results_data.get('image') %}
+            <div class="alert alert-info" role="alert">
+                No results found for your query. Try different keywords or broaden your search.
+            </div>
+        {% endif %}
+
+        {% if search_results_data.get('text') %}
+            <h4 class="text-muted mb-2">Text Documents:</h4>
+            <div class="list-group mb-4">
+            {% for result in search_results_data.get('text', []) %}
+                {% if result.get('path') %}
+                <a href="{{ url_for('main.serve_media_file', encoded_filepath=(result.get('path') | urlsafe_b64encode)) }}" target="_blank" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1"><span data-feather="file-text" class="file-icon"></span> {{ result.get('path', 'Unknown File').split('/')[-1] }}</h5>
+                        {# Score display remains removed as per your class structure #}
+                    </div>
+                    <p class="mb-1 small-text text-muted">{{ result.get('path', 'No path available') }}</p>
+                    {% if result.get('text') %}
+                    <p class="mb-0 small-text" style="max-height: 60px; overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap;">
+                        <em>Snippet:</em> {{ result.get('text')[:200] }}{% if result.get('text')|length > 200 %}...{% endif %}
+                    </p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if search_results_data.get('image') %}
+            <h4 class="text-muted mb-2">Media Files:</h4>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for result in search_results_data.get('image', []) %}
+                <div class="col">
+                    <div class="card search-result-card h-100">
+                        {% if result.get('path') %} {# Main check for existence of path #}
+                            {# If 'image' key (base64 data) is present, embed directly #}
+                            {% if (result.get('file_type') == 'image' or result.get('file_type') == 'video_frame') and result.get('image') %}
+                                <img src="data:image/jpeg;base64,{{ result.get('image') }}" class="card-img-top" alt="{{ result.get('path', 'Media').split('/')[-1] }}" style="object-fit: contain; height: 150px; background-color: #f0f0f0;">
+                            {# For actual video files, use the <video> tag with src pointing to serve_media_file #}
+                            {% elif result.get('file_type') == 'video' %}
+                                 <video controls class="card-img-top" style="height: 150px; width: 100%; background-color: #000;">
+                                    <source src="{{ url_for('main.serve_media_file', encoded_filepath=(result.get('path') | urlsafe_b64encode)) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {# Fallback: If it's an image/frame type but no base64, or other types, link to serve_media_file #}
+                            {% elif result.get('file_type') == 'image' or result.get('file_type') == 'video_frame' %}
+                                 <img src="{{ url_for('main.serve_media_file', encoded_filepath=(result.get('path') | urlsafe_b64encode)) }}" class="card-img-top" alt="{{ result.get('path', 'Media').split('/')[-1] }}" style="object-fit: contain; height: 150px; background-color: #f0f0f0;">
+                            {% else %}
+                                <a href="{{ url_for('main.serve_media_file', encoded_filepath=(result.get('path') | urlsafe_b64encode)) }}" target="_blank" class="d-block">
+                                    <div class="card-img-top bg-light d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                                        <span data-feather="film" style="width:48px; height:48px; color: #ccc;"></span>
+                                        <small class="text-muted mt-1">View {{ result.get('file_type', 'file') }}</small>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% else %} {# Fallback if path itself is missing in the result item #}
+                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                <span data-feather="alert-triangle" style="width:48px; height:48px; color: #ccc;"></span>
+                                <p class="small-text text-muted">No path for media</p>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title" style="word-break: break-all;">
+                                {% if result.get('path') %}
+                                    {{ result.get('path').split('/')[-1].split('.')[0] }}{% if result.get('file_type') == 'video_frame' %}_frame{% endif %}
+                                {% else %}
+                                    Unknown Media
+                                {% endif %}
+                            </h6>
+                            <p class="card-text small-text text-muted">Type: {{ result.get('file_type', 'N/A') | replace('_', ' ') | title }}</p>
+                            {# Score display removed #}
+                        </div>
+                        {% if result.get('path') %}
+                        <div class="card-footer bg-transparent border-top-0">
+                             <a href="{{ url_for('main.serve_media_file', encoded_filepath=(result.get('path') | urlsafe_b64encode)) }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                                <span data-feather="external-link" class="me-1"></span> View/Download Original
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

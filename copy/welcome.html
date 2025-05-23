@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="welcome-hero">
+    <div class="container">
+        <h1>Welcome to Lumar!</h1>
+        <p class="lead">Unlock the power of your local documents with semantic search and intelligent chat.</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if video_exists and welcome_video_path %}
+            <div class="video-wrapper text-center mb-4">
+                <video autoplay muted loop playsinline>
+                    <source src="{{ welcome_video_path }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                Welcome video not found. (Expected: {{ config.WELCOME_VIDEO_FILENAME }})
+            </div>
+            {% endif %}
+
+            <div class="text-center">
+                <a href="{{ url_for('main.proceed_to_login') }}" class="btn btn-primary btn-lg">
+                    <span data-feather="arrow-right-circle" class="me-2"></span>Get Started
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+    {% if auto_proceed and not session.logged_in %} {# Combine conditions at Jinja level #}
+    <script>
+        // This script block will only be rendered if auto_proceed is true AND user is not logged in
+        setTimeout(function() {
+            window.location.href = "{{ url_for('main.proceed_to_login') }}";
+        }, 7000);
+    </script>
+    {% endif %}
+{% endblock %}
